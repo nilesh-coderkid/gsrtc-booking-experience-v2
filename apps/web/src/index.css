@@ -1,19 +1,43 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #b91d20;
+  --color-primary-hover: #9b1619;
+  --color-primary-container: #c62828;
+  --color-royal-navy: #0B1E33;
+  --color-kesari-saffron: #E8590C;
+  --color-emerald-active: #059669;
+  --color-canvas-bg: #F8FAFC;
+  --color-border-subtle: #E2E8F0;
+  --color-slate-text-primary: #0F172A;
+  --color-slate-text-muted: #64748B;
+
+  --font-gujarati: 'Noto Sans Gujarati', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-headline: 'Plus Jakarta Sans', 'Noto Sans Gujarati', sans-serif;
+  --font-sans: 'Noto Sans Gujarati', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --shadow-soft-card: 0 10px 30px -5px rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.02);
+  --shadow-elevated: 0 20px 40px -10px rgba(11, 30, 51, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  --shadow-glow-red: 0 12px 24px -6px rgba(185, 29, 32, 0.28);
+}
+
 @layer base {
   :root {
-    --gsrtc-navy: #002B49;
+    --gsrtc-navy: #0B1E33;
     --gsrtc-navy-light: #003e6b;
     --gsrtc-saffron: #E8590C;
     --gsrtc-saffron-light: #ff772e;
     --gsrtc-green: #059669;
     --gsrtc-emerald: #10b981;
+    --gsrtc-vermilion: #b91d20;
   }
 
-  body {
-    background-color: #f8fafc;
-    color: #0f172a;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #F8FAFC;
+    color: #0d1c2f;
+    font-family: 'Noto Sans Gujarati', 'Plus Jakarta Sans', 'Inter', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -28,7 +52,7 @@
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(148, 163, 184, 0.5);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -49,14 +73,14 @@
 
 /* Glassmorphism surfaces */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 .glass-nav {
-  background: rgba(0, 43, 73, 0.95);
-  backdrop-filter: blur(12px);
+  background: rgba(11, 30, 51, 0.96);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 

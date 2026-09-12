@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/layout/Navbar';
 import { LiveCounterTicker } from './components/layout/LiveCounterTicker';
 import { HeroOmnibox } from './components/hero/HeroOmnibox';
+import { QuickPassengerActions } from './components/hero/QuickPassengerActions';
+import { FleetShowcaseSection } from './components/hero/FleetShowcaseSection';
+import { PilgrimageTourismSection } from './components/hero/PilgrimageTourismSection';
+import { TelemetryStatsSection } from './components/hero/TelemetryStatsSection';
+import { MobileAppPromoSection } from './components/hero/MobileAppPromoSection';
 import { BookingStepper, BookingStep } from './components/stepper/BookingStepper';
 import { BusList } from './components/buses/BusList';
 import { SeatPicker } from './components/seatmap/SeatPicker';
@@ -14,7 +19,7 @@ import { MyBookingsDrawer } from './components/layout/MyBookingsDrawer';
 import { EmergencyHelplineModal } from './components/helpline/EmergencyHelplineModal';
 import { Footer } from './components/layout/Footer';
 
-import { BusSchedule, QuotaType, Booking } from '@gsrtc/types';
+import { BusSchedule, QuotaType, Booking, BusClass } from '@gsrtc/types';
 import { BusService, BusFilters } from './services/busService';
 import { BookingService } from './services/bookingService';
 import { GSRTCStorageEngine } from './services/storageEngine';
@@ -148,8 +153,37 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSelectFleetClass = (busClass: BusClass | 'ALL', filterAc = false) => {
+    setFilters((prev) => ({
+      ...prev,
+      busClass,
+      hasAc: filterAc,
+      isSleeper: busClass === 'SLEEPER_NON_AC' || busClass === 'VOLVO_AC',
+    }));
+    setActiveTab('BOOKING');
+    setBookingStep(1);
+    setTimeout(() => {
+      const el = document.getElementById('bus-results-section') || document.getElementById('booking-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+  };
+
+  const handleSelectDestination = (destId: string, quotaType?: 'STATUE_OF_UNITY' | 'GENERAL') => {
+    setToStationId(destId);
+    if (quotaType) {
+      setQuota(quotaType);
+    }
+    setActiveTab('BOOKING');
+    setBookingStep(1);
+    setTimeout(() => {
+      performSearch();
+      const el = document.getElementById('bus-results-section') || document.getElementById('booking-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-[#E8590C] selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-[#b91d20] selection:text-white">
       {/* 1. Global Navigation Bar */}
       <Navbar
         activeTab={activeTab}
@@ -168,15 +202,17 @@ export function App() {
       <main className="flex-1 pb-12">
         {/* VIEW A: BOOKING TAB (ONE-PAGE FLOW) */}
         {activeTab === 'BOOKING' && (
-          <div className="space-y-2">
+          <div className="space-y-4">
             {/* Step Progress Stepper */}
-            <BookingStepper
-              currentStep={bookingStep}
-              onStepClick={handleStepClick}
-              selectedSeatsCount={selectedSeats.length}
-            />
+            {bookingStep > 1 && (
+              <BookingStepper
+                currentStep={bookingStep}
+                onStepClick={handleStepClick}
+                selectedSeatsCount={selectedSeats.length}
+              />
+            )}
 
-            {/* STEP 1: Hero Search & Bus List */}
+            {/* STEP 1: Hero Search, Quick Actions, Bus List & Showcase Sections */}
             {bookingStep === 1 && (
               <>
                 <HeroOmnibox
@@ -191,13 +227,38 @@ export function App() {
                   onSearch={performSearch}
                 />
 
-                <BusList
-                  schedules={schedules}
-                  selectedScheduleId={selectedSchedule?.id || null}
-                  onSelectSchedule={handleSelectSchedule}
-                  filters={filters}
-                  onFilterChange={setFilters}
+                {/* Quick 8-Action Grid */}
+                <QuickPassengerActions
+                  onSelectTab={(tab) => {
+                    setActiveTab(tab);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  onOpenMyBookings={() => setIsMyBookingsOpen(true)}
+                  onOpenHelpline={() => setIsHelplineOpen(true)}
                 />
+
+                {/* Bus List Results */}
+                <div id="bus-results-section">
+                  <BusList
+                    schedules={schedules}
+                    selectedScheduleId={selectedSchedule?.id || null}
+                    onSelectSchedule={handleSelectSchedule}
+                    filters={filters}
+                    onFilterChange={setFilters}
+                  />
+                </div>
+
+                {/* Fleet Showcase */}
+                <FleetShowcaseSection onSelectFleetClass={handleSelectFleetClass} />
+
+                {/* Pilgrimage & Tourism Showcase */}
+                <PilgrimageTourismSection onSelectDestination={handleSelectDestination} />
+
+                {/* 2026 Telemetry Stats */}
+                <TelemetryStatsSection />
+
+                {/* Mobile App Promo */}
+                <MobileAppPromoSection />
               </>
             )}
 
