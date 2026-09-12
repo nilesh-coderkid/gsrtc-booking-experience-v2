@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Booking } from '@gsrtc/types';
 import { BookingService } from '../../services/bookingService';
-import { GSRTCStorageEngine } from '../../services/storageEngine';
-import { XCircle, Search, AlertCircle, CheckCircle2, ShieldAlert, ArrowRight, Wallet } from 'lucide-react';
+import { XCircle, Search, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { useLanguage } from '../../hooks/useLanguage';
 
 export const CancellationSection: React.FC = () => {
@@ -40,6 +39,11 @@ export const CancellationSection: React.FC = () => {
     }
   };
 
+  const refundPolicy =
+    activeBooking && activeBooking.status === 'CONFIRMED'
+      ? BookingService.calculateRefundPolicy(activeBooking)
+      : null;
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 animate-fadeIn">
       {/* Header Banner */}
@@ -61,7 +65,7 @@ export const CancellationSection: React.FC = () => {
             required
             value={pnrInput}
             onChange={(e) => setPnrInput(e.target.value)}
-            placeholder="Enter 10-digit PNR (e.g. GSRTC-982341)"
+            placeholder="Enter PNR (e.g. GSRTC-982341)"
             className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-600"
           />
           <button
@@ -106,24 +110,29 @@ export const CancellationSection: React.FC = () => {
           </div>
 
           {/* Refund Calculation Summary */}
-          {activeBooking.status === 'CONFIRMED' ? (
+          {activeBooking.status === 'CONFIRMED' && refundPolicy ? (
             <div>
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-xs mb-4">
-                <h4 className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">
-                  Cancellation & Refund Calculation
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-slate-800 uppercase tracking-wider text-[10px]">
+                    Dynamic Refund Calculation
+                  </h4>
+                  <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">
+                    {refundPolicy.tierLabel}
+                  </span>
+                </div>
                 <div className="flex justify-between text-slate-600">
                   <span>Total Amount Paid:</span>
                   <span className="font-mono font-bold text-slate-900">₹{activeBooking.totalPaid.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
-                  <span>Standard Cancellation Charge (15%):</span>
-                  <span className="text-red-600 font-mono">-₹{(activeBooking.totalPaid * 0.15).toFixed(2)}</span>
+                  <span>Cancellation Charge ({(refundPolicy.chargeRate * 100).toFixed(0)}%):</span>
+                  <span className="text-red-600 font-mono">-₹{refundPolicy.chargeAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-800 font-bold pt-2 border-t border-slate-200">
                   <span>Net Refundable to GSRTC Wallet:</span>
                   <span className="font-mono text-emerald-700 text-sm">
-                    ₹{(activeBooking.totalPaid * 0.85).toFixed(2)}
+                    ₹{refundPolicy.refundAmount.toFixed(2)}
                   </span>
                 </div>
               </div>

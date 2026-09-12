@@ -73,6 +73,65 @@ export class BookingService {
     return GSRTCStorageEngine.getBookings().find((b) => b.pnr.toUpperCase() === pnr.toUpperCase());
   }
 
+  public static calculateRefundPolicy(booking: Booking): {
+    percentage: number;
+    chargeRate: number;
+    chargeAmount: number;
+    refundAmount: number;
+    tierLabel: string;
+  } {
+    // Parse departure datetime (e.g. "2026-09-12 06:30 AM")
+    const parseTime = (timeStr: string) => {
+      const parts = timeStr.trim().split(/[:\s]/);
+      let h = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10) || 0;
+      const ampm = parts[parts.length - 1].toUpperCase();
+      if (ampm === 'PM' && h < 12) h += 12;
+      if (ampm === 'AM' && h === 12) h = 0;
+      return { h, m };
+    };
+
+    const { h, m } = parseTime(booking.departureTime);
+    const depDate = new Date(booking.journeyDate);
+    depDate.setHours(h, m, 0, 0);
+
+    const now = new Date();
+    const diffHours = (depDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    let percentage = 0.85;
+    let chargeRate = 0.15;
+    let tierLabel = 'Standard Cancellation (> 12 Hours Prior)';
+
+    if (diffHours > 24) {
+      percentage = 0.90;
+      chargeRate = 0.10;
+      tierLabel = '> 24 Hours Prior to Departure (10% Charge)';
+    } else if (diffHours > 12) {
+      percentage = 0.75;
+      chargeRate = 0.25;
+      tierLabel = '12 - 24 Hours Prior to Departure (25% Charge)';
+    } else if (diffHours > 2) {
+      percentage = 0.50;
+      chargeRate = 0.50;
+      tierLabel = '2 - 12 Hours Prior to Departure (50% Charge)';
+    } else if (diffHours <= 2 && diffHours > 0) {
+      percentage = 0.0;
+      chargeRate = 1.0;
+      tierLabel = '< 2 Hours Prior to Departure (Non-Refundable)';
+    }
+
+    const chargeAmount = Math.round(booking.totalPaid * chargeRate * 100) / 100;
+    const refundAmount = Math.round(booking.totalPaid * percentage * 100) / 100;
+
+    return {
+      percentage,
+      chargeRate,
+      chargeAmount,
+      refundAmount,
+      tierLabel,
+    };
+  }
+
   public static cancelBooking(pnr: string): { success: boolean; refundAmount: number; message: string } {
     const bookings = GSRTCStorageEngine.getBookings();
     const index = bookings.findIndex((b) => b.pnr.toUpperCase() === pnr.toUpperCase());
@@ -86,9 +145,8 @@ export class BookingService {
       return { success: false, refundAmount: 0, message: 'This ticket has already been cancelled.' };
     }
 
-    // Policy Calculation: 85% refund if cancelled before departure
-    const refundPercentage = 0.85;
-    const refundAmount = Math.round(booking.totalPaid * refundPercentage * 100) / 100;
+    // Dynamic Policy Calculation
+    const { refundAmount, tierLabel } = this.calculateRefundPolicy(booking);
 
     booking.status = 'CANCELLED';
     booking.refundAmount = refundAmount;
@@ -98,12 +156,14 @@ export class BookingService {
     GSRTCStorageEngine.setItem('gsrtc_bookings', bookings);
 
     // Credit refund to GSRTC Wallet
-    GSRTCStorageEngine.updateWalletBalance(refundAmount);
+    if (refundAmount > 0) {
+      GSRTCStorageEngine.updateWalletBalance(refundAmount);
+    }
 
     return {
       success: true,
       refundAmount,
-      message: `Ticket ${pnr} cancelled successfully. ₹${refundAmount} has been refunded to your GSRTC Smart Wallet.`,
+      message: `Ticket ${pnr} cancelled (${tierLabel}). ₹${refundAmount} has been refunded to your GSRTC Smart Wallet.`,
     };
   }
 }
