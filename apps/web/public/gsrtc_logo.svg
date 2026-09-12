@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <g transform="translate(4, 4)">
+    <circle cx="26" cy="26" r="25" fill="#C62828" />
+    <circle cx="26" cy="26" r="22" stroke="#FFFFFF" stroke-width="1.5" fill="#002B49" />
+    <!-- Stylized emblem inside -->
+    <path d="M26 10 L30 18 L38 20 L32 26 L34 34 L26 30 L18 34 L20 26 L14 20 L22 18 Z" fill="#F59E0B" />
+    <circle cx="26" cy="26" r="6" fill="#C62828" stroke="#FFFFFF" stroke-width="1.5" />
+    <path d="M16 38 C20 42 32 42 36 38" stroke="#E8590C" stroke-width="2" stroke-linecap="round" fill="none" />
+  </g>
+  <!-- Text Brand -->
+  <text x="64" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="20" fill="#002B49" letter-spacing="-0.5">GSRTC</text>
+  <text x="142" y="27" font-family="'Noto Sans Gujarati', sans-serif" font-weight="700" font-size="14" fill="#C62828">નિગમ</text>
+  <text x="64" y="44" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" font-size="10" fill="#64748B" letter-spacing="0.5">GUJARAT STATE ROAD TRANSPORT CORP.</text>
+</svg>
