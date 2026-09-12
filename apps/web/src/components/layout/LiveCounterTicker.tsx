@@ -17,7 +17,7 @@ export const LiveCounterTicker: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-[#00223b] border-y border-white/10 py-3 px-4 text-white shadow-inner">
+    <div className="bg-[#0B1E33] border-y border-white/10 py-3 px-4 text-white shadow-inner">
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
         <div className="flex flex-col items-center justify-center p-1">
           <div className="flex items-center gap-1.5 text-orange-400 mb-0.5">

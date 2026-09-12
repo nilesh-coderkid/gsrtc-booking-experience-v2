@@ -126,7 +126,15 @@ const DICTIONARY: Record<SupportedLanguage, Record<string, string>> = {
 };
 
 export function useLanguage() {
-  const [lang, setLang] = useState<SupportedLanguage>('en');
+  const [lang, setLang] = useState<SupportedLanguage>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('gsrtc_lang') as SupportedLanguage;
+      if (saved && (saved === 'en' || saved === 'gu' || saved === 'hi')) {
+        return saved;
+      }
+    }
+    return 'gu';
+  });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
