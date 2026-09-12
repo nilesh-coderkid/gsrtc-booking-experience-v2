@@ -17,6 +17,7 @@
 9. [Login / Register](#9-login--register)
 10. [Mobile Navigation](#10-mobile-navigation)
 11. [Component Specs](#11-component-specs)
+12. [React.js Component Architecture & Route Mapping](#12-reactjs-component-architecture--route-mapping)
 
 ---
 
@@ -888,18 +889,96 @@ TINY:       text-xs                 → Badges, timestamps
 
 ---
 
+## 12. React.js Component Architecture & State Mapping
+
+All wireframe mockups map directly into the client-side **React 19** functional components, services, and reactive custom hooks implemented in `@gsrtc/web`.
+
+### Component Tree & State Mapping
+
+| Wireframe Section | Primary React Component | Sub-Components / Services | State & Custom Hooks |
+|---|---|---|---|
+| **§1, §2: Homepage & Hero** | `apps/web/src/components/hero/HeroOmnibox.tsx` | `<Navbar />`, `<LiveCounterTicker />`, `<HeroOmnibox />`, `<Footer />` | `fromStationId`, `toStationId`, `quota`, `useLanguage()` |
+| **§3: Search Results & Filters** | `apps/web/src/components/buses/BusList.tsx` | `<BusCard />`, `BusService.searchBuses()`, filter bar | `filters`, `schedules`, `selectedSchedule` |
+| **§4: Seat Selection** | `apps/web/src/components/seatmap/SeatPicker.tsx` | Deck tabs (Lower/Upper), driver cabin, `.seat-locked-stripes` | `useSeatLocks(scheduleId)`, `SeatLockService`, `selectedSeats` |
+| **§5, §6: Passenger & Checkout** | `apps/web/src/components/checkout/PassengerCheckout.tsx` | Boarding point dropdown, passenger form, fare breakdown, UPI QR simulator | `BookingService.createBooking()`, `GSRTCStorageEngine` |
+| **§7: Digital E-Ticket** | `apps/web/src/components/ticket/ETicketView.tsx` | Dynamic SVG QR ticket, Print/PDF layout, `canvas-confetti` celebration | `confirmedBooking`, `WhatsAppShare`, `window.print()` |
+| **§8: My Bookings Drawer** | `apps/web/src/components/layout/MyBookingsDrawer.tsx` | Ticket cards, status pills, PNR search, cancel triggers | `isMyBookingsOpen`, `GSRTCStorageEngine.getAllBookings()` |
+| **§9: Emergency Helpline** | `apps/web/src/components/helpline/EmergencyHelplineModal.tsx` | 24x7 control room emergency contact modal | `isHelplineOpen` |
+| **§10: Mobile Navigation** | `apps/web/src/components/layout/Navbar.tsx` | Mobile view tabs (`Book Bus`, `Live Tracker`, `Bus Pass`, `Cancel`) | `activeTab`, `useLanguage()` |
+| **§11: Live GPS Bus Tracker** | `apps/web/src/components/tracking/LiveBusTracker.tsx` | Interactive station route timeline, speed badge, ETA calculator | `trackingPnr`, `activeTab === 'TRACKING'` |
+| **§12: Bus Pass & Cancel** | `BusPassSection.tsx`, `CancellationSection.tsx` | Digital commuter/student pass generator, refund tier calculator | `activeTab === 'PASS'`, `activeTab === 'CANCEL'` |
+
+### One-Page State Machine Architecture
+
+```tsx
+// apps/web/src/App.tsx
+export function App() {
+  // Top-level Navigation View Tabs
+  const [activeTab, setActiveTab] = useState<'BOOKING' | 'TRACKING' | 'PASS' | 'CANCEL'>('BOOKING');
+
+  // Booking Flow Stepper (1: Bus Search, 2: Seat Picker, 3: Passenger/Checkout, 4: E-Ticket)
+  const [bookingStep, setBookingStep] = useState<BookingStep>(1);
+
+  // Search Parameters & Fleet Results
+  const [fromStationId, setFromStationId] = useState('ADI-GM');
+  const [toStationId, setToStationId] = useState('SOU-NV');
+  const [journeyDate, setJourneyDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [quota, setQuota] = useState<QuotaType>('GENERAL');
+  const [schedules, setSchedules] = useState<BusSchedule[]>([]);
+  const [selectedSchedule, setSelectedSchedule] = useState<BusSchedule | null>(null);
+  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
+
+  // Drawers & Modals
+  const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
+  const [isHelplineOpen, setIsHelplineOpen] = useState(false);
+  ...
+}
+```
+
+### Pure Client-Side State Flow
+
+```
+┌─────────────────────────┐
+│     HeroOmnibox         │ ─── updates station/date/quota ──►  App.tsx State Machine
+└───────────┬─────────────┘
+            │
+            ▼
+┌─────────────────────────┐
+│     BusList (Step 1)    │ ◄─── queries bus data from ───────►  BusService (seedData.ts)
+└───────────┬─────────────┘
+            │
+            ▼
+┌─────────────────────────┐
+│   SeatPicker (Step 2)   │ ◄─── locks seat via Broadcast ────►  SeatLockService (localStorage)
+└───────────┬─────────────┘
+            │
+            ▼
+┌─────────────────────────┐
+│ PassengerCheckout (3)   │ ─── validates passenger details ──►  BookingService.createBooking()
+└───────────┬─────────────┘
+            │
+            ▼
+┌─────────────────────────┐
+│   ETicketView (Step 4)  │ ─── displays confirmed ticket ────►  Dynamic SVG QR + canvas-confetti
+└─────────────────────────┘
+```
+
+---
+
 ## Summary
 
 | Wireframe | File | Status |
 |-----------|------|--------|
-| Homepage Desktop | `wireframes.md §1` | ✅ Complete |
-| Homepage Mobile | `wireframes.md §2` | ✅ Complete |
-| Search Results | `wireframes.md §3` | ✅ Complete |
-| Seat Selection | `wireframes.md §4` | ✅ Complete |
-| Passenger Details | `wireframes.md §5` | ✅ Complete |
-| Payment | `wireframes.md §6` | ✅ Complete |
-| Booking Confirmation | `wireframes.md §7` | ✅ Complete |
-| Dashboard | `wireframes.md §8` | ✅ Complete |
-| Login / Register | `wireframes.md §9` | ✅ Complete |
-| Mobile Navigation | `wireframes.md §10` | ✅ Complete |
-| Component Specs | `wireframes.md §11` | ✅ Complete |
+| Homepage Desktop | `docs/GSRTC-WIREFRAMES.md §1` | ✅ Complete |
+| Homepage Mobile | `docs/GSRTC-WIREFRAMES.md §2` | ✅ Complete |
+| Search Results | `docs/GSRTC-WIREFRAMES.md §3` | ✅ Complete |
+| Seat Selection | `docs/GSRTC-WIREFRAMES.md §4` | ✅ Complete |
+| Passenger Details | `docs/GSRTC-WIREFRAMES.md §5` | ✅ Complete |
+| Payment | `docs/GSRTC-WIREFRAMES.md §6` | ✅ Complete |
+| Booking Confirmation | `docs/GSRTC-WIREFRAMES.md §7` | ✅ Complete |
+| Dashboard | `docs/GSRTC-WIREFRAMES.md §8` | ✅ Complete |
+| Login / Register | `docs/GSRTC-WIREFRAMES.md §9` | ✅ Complete |
+| Mobile Navigation | `docs/GSRTC-WIREFRAMES.md §10` | ✅ Complete |
+| Component Specs | `docs/GSRTC-WIREFRAMES.md §11` | ✅ Complete |
+| React.js Component Architecture | `docs/GSRTC-WIREFRAMES.md §12` | ✅ Complete |

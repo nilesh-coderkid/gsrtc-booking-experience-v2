@@ -1,4 +1,4 @@
-# Next-Generation GSRTC Travel & Bus Reservation Platform: One-Page Architecture & Implementation Plan
+# Modern GSRTC Travel & Bus Reservation Platform: One-Page Architecture & Implementation Plan
 
 A high-performance, accessible bus booking and transit platform inspired by the **Gujarat State Road Transport Corporation (GSRTC)**, built as a unified **One-Page React Application (Vite + TypeScript + Tailwind CSS)** powered by a **LocalStorage Data & State Engine** (`GSRTCStorageEngine`) with **Real-Time Atomic Seat Concurrency Locking**.
 
@@ -27,7 +27,7 @@ A high-performance, accessible bus booking and transit platform inspired by the 
 >    - **Styling**: Tailwind CSS (Gujarat transit palette: Royal Navy `#002B49`, Kesari Saffron `#E8590C`, Emerald Green `#059669`, glassmorphism)
 >    - **Backend/State**: LocalStorage Data Engine (Pre-seeded with 30+ Gujarat stations, bus types, and daily schedules)
 >    - **Accessibility**: Web Speech API for Gujarati & English voice readouts
->    - **Structure**: Clean Monorepo layout (`apps/web`, `packages/types`, `packages/ui`)
+>    - **Structure**: Clean Monorepo layout (`apps/web`, `packages/types`)
 
 ---
 
@@ -104,24 +104,27 @@ A high-performance, accessible bus booking and transit platform inspired by the 
 ## Monorepo & Project Structure
 
 ```
-gdg_tec_bvn/
+gsrtc-booking-experience-v2/
 ├── apps/
-│   └── web/                                # One-Page React App (Vite + TypeScript + Tailwind CSS)
+│   └── web/                                # One-Page React App (Vite 6 + React 19 + Tailwind CSS v4)
 │       ├── src/
-│       │   ├── App.tsx                     # One-Page layout container & active section manager
-│       │   ├── main.tsx                    # React Root
-│       │   ├── index.css                   # Tailwind CSS setup & transit design tokens
+│       │   ├── App.tsx                     # One-Page layout container & active view state machine
+│       │   ├── main.tsx                    # React 19 Root entry point
+│       │   ├── index.css                   # Tailwind CSS v4 setup & transit design tokens
+│       │   ├── App.css                     # Component styling overrides
 │       │   │
-│       │   ├── components/                 # Cohesive modular components
-│       │   │   ├── hero/                   # Omnibox, CityAutocomplete, DateSelector, QuotaTabs
-│       │   │   ├── buses/                  # BusList, BusCard, FilterBar, AmenitiesBadges
-│       │   │   ├── seatmap/                # SeatPicker, LowerDeck, UpperDeck, LockCountdown, SeatLegend
-│       │   │   ├── checkout/               # BoardingSelector, PassengerForm, FareSummary, PaymentModal
-│       │   │   ├── ticket/                 # DynamicQrTicket, PrintTicketView, WhatsAppShare
-│       │   │   ├── tracking/               # LiveBusTrackerSection, RouteTimelineMap, SpeedBadge
-│       │   │   ├── pass/                   # BusPassSection, DigitalPassCard, PassApplicationForm
-│       │   │   ├── cancel/                 # CancellationSection, RefundCalculator
-│       │   │   └── layout/                 # Navbar, MyBookingsDrawer, LanguageToggle, VoiceAssist
+│       │   ├── components/                 # Cohesive modular transit components
+│       │   │   ├── hero/                   # HeroOmnibox.tsx
+│       │   │   ├── buses/                  # BusList.tsx, BusCard.tsx
+│       │   │   ├── seatmap/                # SeatPicker.tsx (Dual deck, Concurrency lock)
+│       │   │   ├── checkout/               # PassengerCheckout.tsx (Boarding, Passenger form, UPI)
+│       │   │   ├── ticket/                 # ETicketView.tsx (Dynamic QR, Print/PDF layout)
+│       │   │   ├── tracking/               # LiveBusTracker.tsx (Route timeline, GPS speed)
+│       │   │   ├── pass/                   # BusPassSection.tsx (Commuter & Student pass card)
+│       │   │   ├── cancel/                 # CancellationSection.tsx (Refund calculator)
+│       │   │   ├── helpline/               # EmergencyHelplineModal.tsx (24x7 control room)
+│       │   │   ├── stepper/                # BookingStepper.tsx (Steps 1-4)
+│       │   │   └── layout/                 # Navbar.tsx, Footer.tsx, LiveCounterTicker.tsx, MyBookingsDrawer.tsx
 │       │   │
 │       │   ├── services/                   # LocalStorage Data Layer & Concurrency Engine
 │       │   │   ├── seedData.ts             # 30+ Gujarat stations, bus types, schedules, checkpoints
@@ -129,28 +132,33 @@ gdg_tec_bvn/
 │       │   │   ├── busService.ts           # Search, schedule queries, route stops
 │       │   │   ├── seatLockService.ts      # Atomic 10-min hold with BroadcastChannel
 │       │   │   ├── bookingService.ts       # PNR generator, ticket persistence, wallet
+│       │   │   ├── passService.ts          # Commuter & student pass records
 │       │   │   └── trackingService.ts      # Real-time GPS movement simulation
 │       │   │
-│       │   └── hooks/
-│       │       ├── useSeatLocks.ts         # Reactive seat locks listener & countdown timer
-│       │       └── useLanguage.ts          # English / Gujarati / Hindi dictionary
+│       │   ├── hooks/                      # Custom reactive hooks
+│       │   │   ├── useSeatLocks.ts         # Reactive seat locks listener & countdown timer
+│       │   │   └── useLanguage.ts          # Trilingual Gujarati / Hindi / English dictionary & hook
+│       │   │
+│       │   └── speech/                     # Voice accessibility
+│       │       └── speechEngine.ts         # Web Speech API engine for Divyang readouts
 │       │
-│       ├── package.json
-│       ├── tsconfig.json
-│       └── vite.config.ts
+│       ├── public/                         # Favicon & SVG assets
+│       ├── index.html                      # Single Page Application HTML entry
+│       ├── package.json                    # @gsrtc/web dependencies
+│       ├── tsconfig.json                   # Web app TypeScript config
+│       └── vite.config.ts                  # Vite 6 config with @tailwindcss/vite
 │
 ├── packages/
-│   ├── types/                              # Shared TypeScript models (Station, Bus, Schedule, Booking)
-│   │   ├── src/index.ts
-│   │   └── package.json
-│   └── ui/                                 # Shared UI primitives (Button, Modal, Badge, Card)
-│       ├── src/index.ts
-│       └── package.json
+│   └── types/                              # Shared transit TypeScript contracts (@gsrtc/types)
+│       ├── src/
+│       │   └── index.ts                    # Station, BusSchedule, Seat, Booking, etc.
+│       ├── package.json                    # @gsrtc/types package manifest
+│       └── tsconfig.json                   # Shared TypeScript config
 │
+├── docs/                                   # Documentation & architecture specifications
 ├── pnpm-workspace.yaml                     # Workspace configuration
-├── turbo.json                              # Turborepo task pipeline
-├── package.json                            # Root scripts (pnpm dev, pnpm build)
-└── README.md
+├── package.json                            # Root scripts (dev, build, preview)
+└── pnpm-lock.yaml                          # Lockfile
 ```
 
 ---
@@ -168,8 +176,8 @@ graph TD
 ```
 
 ### Step 1: Monorepo & Vite + React Setup
-- Configure root `pnpm-workspace.yaml`, `package.json`, and `turbo.json`.
-- Initialize `apps/web` with Vite, React (TypeScript), and Tailwind CSS.
+- Configure root `pnpm-workspace.yaml` and `package.json`.
+- Initialize `apps/web` with Vite 6, React 19 (TypeScript), and Tailwind CSS v4 (`@tailwindcss/vite`).
 - Configure Gujarat transit theme (Royal Blue, Kesari Saffron, Emerald Green, smooth glassmorphic cards).
 
 ### Step 2: LocalStorage Engine & Pre-Seeded Gujarat Transit Data
@@ -197,7 +205,7 @@ graph TD
 ### Step 6: Digital E-Ticket, Dynamic QR & Live GPS Bus Tracking View
 - Instant PNR generation with digital ticket card and dynamic QR code.
 - 1-Click print-ready / PDF download layout.
-- In-page Live GPS Bus Tracking view showing bus progress along stations, current speed, and next stop ETA.
+- In-page Live GPS Bus Tracking view showing bus progress along stations, current speed, and upcoming stop ETA.
 
 ### Step 7: Commuter Bus Pass & Cancellation Sections, Voice Polish
 - Commuter & Student pass generator with instant digital pass card preview.
