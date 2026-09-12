@@ -146,30 +146,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* 2. Main Navigation Bar */}
       <div className="max-w-[1300px] mx-auto px-4 sm:px-8 h-20 flex flex-nowrap items-center justify-between gap-4">
-        {/* Emblem & Brand Logo */}
+        {/* GSRTC Official Brand Logo from gsrtc.in/site */}
         <div
           onClick={() => {
             setActiveTab('BOOKING');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="flex items-center gap-3 shrink-0 cursor-pointer group"
+          className="flex items-center shrink-0 cursor-pointer group py-1"
+          title="GSRTC - Gujarat State Road Transport Corporation"
         >
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#b91d20] via-[#c62828] to-[#E8590C] flex items-center justify-center shadow-md shadow-red-600/20 group-hover:scale-105 transition-transform duration-300">
-            <Bus className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex flex-col shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-[22px] tracking-tight text-[#0B1E33] leading-none whitespace-nowrap font-serif">
-                GSRTC
-              </span>
-              <span className="text-[10px] bg-red-50 text-[#b91d20] border border-red-200/60 font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                {lang === 'gu' ? 'આપણી બસ' : 'Our Bus'}
-              </span>
-            </div>
-            <span className="text-[11px] font-semibold text-slate-500 mt-1 leading-tight whitespace-nowrap">
-              {lang === 'gu' ? 'ગુજરાત એસ.ટી. નિગમ' : 'Gujarat State Transit'}
-            </span>
-          </div>
+          <img
+            src="/gsrtc_original_logo.png"
+            alt="GSRTC - Gujarat State Road Transport Corporation"
+            className="h-11 sm:h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+          />
         </div>
 
         {/* Primary Navigation Tabs */}

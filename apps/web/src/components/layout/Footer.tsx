@@ -26,17 +26,16 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-8 border-b border-white/10">
           {/* Col 1 & 2: Logo and About */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#b91d20] flex items-center justify-center font-bold text-white text-lg shadow-sm">
-                ગુ
+            <div className="flex flex-col gap-2">
+              <div className="bg-white px-3 py-2 rounded-xl inline-flex items-center w-fit shadow-md">
+                <img
+                  src="/gsrtc_original_logo.png"
+                  alt="GSRTC - Gujarat State Road Transport Corporation"
+                  className="h-10 w-auto object-contain"
+                />
               </div>
-              <div>
-                <div className="font-bold text-lg leading-tight">
-                  {lang === 'gu' ? 'GSRTC • ગુજરાત એસ.ટી. નિગમ' : 'GSRTC • Gujarat State Transit'}
-                </div>
-                <div className="text-xs text-[#E8590C] font-semibold">
-                  {lang === 'gu' ? 'ગુજરાત સરકારનું જાહેર સાહસ (સ્થાપના: ૧૯૬૦)' : 'Government of Gujarat Undertaking (Est. 1960)'}
-                </div>
+              <div className="text-xs text-[#E8590C] font-semibold mt-1">
+                {lang === 'gu' ? 'ગુજરાત સરકારનું જાહેર સાહસ (સ્થાપના: ૧૯૬૦)' : 'Government of Gujarat Undertaking (Est. 1960)'}
               </div>
             </div>
 

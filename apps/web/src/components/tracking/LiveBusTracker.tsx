@@ -11,7 +11,7 @@ interface LiveBusTrackerProps {
 }
 
 export const LiveBusTracker: React.FC<LiveBusTrackerProps> = ({ initialPnr }) => {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const defaultTarget =
     initialPnr ||
     GSRTCStorageEngine.getBookings()[0]?.pnr ||
@@ -184,15 +184,15 @@ export const LiveBusTracker: React.FC<LiveBusTrackerProps> = ({ initialPnr }) =>
 
           {/* Interactive Route Stop Progression Timeline */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-            <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-5 flex items-center justify-between">
-              <span>Route Milestones & Scheduled Stops</span>
-              <span className="text-xs font-normal text-slate-500 normal-case flex items-center gap-1">
-                <RefreshCw className="w-3 h-3 text-slate-400" />
-                <span>Auto-refreshing live</span>
+            <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-6 flex items-center justify-between">
+              <span>{lang === 'gu' ? 'રૂટ સ્ટોપ અને સમયપત્રક' : 'Route Milestones & Scheduled Stops'}</span>
+              <span className="text-xs font-normal text-slate-500 normal-case flex items-center gap-1.5">
+                <RefreshCw className="w-3.5 h-3.5 text-slate-400 animate-spin" style={{ animationDuration: '6s' }} />
+                <span>{lang === 'gu' ? 'લાઈવ ઓટો-રીફ્રેશ' : 'Auto-refreshing live'}</span>
               </span>
             </h4>
 
-            <div className="relative pl-6 space-y-8 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+            <div className="space-y-0">
               {activeSchedule.routeStops.map((stop, idx) => {
                 const isOrigin = idx === 0;
                 const isDestination = idx === activeSchedule.routeStops.length - 1;
@@ -200,54 +200,68 @@ export const LiveBusTracker: React.FC<LiveBusTrackerProps> = ({ initialPnr }) =>
                 const isCurrent = idx === 1;
 
                 return (
-                  <div key={stop.stationId} className="relative flex items-start justify-between gap-4">
-                    {/* Circle Node on Timeline */}
-                    <div
-                      className={`absolute -left-6 top-0.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white ${
-                        isCurrent
-                          ? 'bg-[#E8590C] text-white shadow-lg animate-pulse'
-                          : isPassed
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-slate-200 text-slate-500'
-                      }`}
-                    >
-                      {isCurrent ? '🚌' : isPassed ? '✓' : idx + 1}
+                  <div key={stop.stationId} className="flex items-start gap-4 group">
+                    {/* Left Column: Milestone Node & Connecting Line (Strictly Independent Column) */}
+                    <div className="flex flex-col items-center shrink-0 w-8">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ring-4 ring-white shadow-sm z-10 transition-transform group-hover:scale-105 ${
+                          isCurrent
+                            ? 'bg-[#E8590C] text-white ring-orange-100 shadow-md animate-pulse'
+                            : isPassed
+                            ? 'bg-[#059669] text-white ring-emerald-100'
+                            : 'bg-slate-100 text-slate-600 ring-slate-100 border border-slate-200'
+                        }`}
+                      >
+                        {isCurrent ? '🚌' : isPassed ? '✓' : idx + 1}
+                      </div>
+
+                      {!isDestination && (
+                        <div
+                          className={`w-0.5 flex-1 min-h-[44px] my-1 ${
+                            isPassed ? 'bg-[#059669]' : 'bg-slate-200'
+                          }`}
+                        />
+                      )}
                     </div>
 
-                    {/* Stop Details */}
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-900">
-                          {stop.stationNameEn}
-                        </span>
-                        {isCurrent && (
-                          <span className="text-[10px] bg-orange-100 text-[#E8590C] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse">
-                            Approaching Now
+                    {/* Right Column: Stop Details & Time */}
+                    <div className={`flex-1 flex items-start justify-between gap-4 pt-1 ${!isDestination ? 'pb-7' : 'pb-1'}`}>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-bold text-sm text-slate-900">
+                            {lang === 'gu' ? stop.stationNameGu : stop.stationNameEn}
                           </span>
-                        )}
-                        {isOrigin && (
-                          <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">
-                            Origin
-                          </span>
-                        )}
-                        {isDestination && (
-                          <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-medium">
-                            Terminal
-                          </span>
-                        )}
+                          {isCurrent && (
+                            <span className="text-[10px] bg-orange-100 text-[#E8590C] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse">
+                              {lang === 'gu' ? 'હાલ પહોંચી રહ્યા છીએ' : 'Approaching Now'}
+                            </span>
+                          )}
+                          {isOrigin && (
+                            <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                              {lang === 'gu' ? 'શરૂઆત' : 'Origin'}
+                            </span>
+                          )}
+                          {isDestination && (
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">
+                              {lang === 'gu' ? 'ગંતવ્ય' : 'Terminal'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {stop.platform ? `${lang === 'gu' ? 'પ્લેટફોર્મ: ' : 'Platform: '}${stop.platform}` : 'Express Stop'} •{' '}
+                          {stop.distanceFromOriginKm} km {lang === 'gu' ? 'અંતર' : 'from start'}
+                        </div>
                       </div>
-                      <div className="text-xs text-slate-500 mt-0.5">
-                        {stop.platform ? `Platform: ${stop.platform}` : 'Express Stop'} •{' '}
-                        {stop.distanceFromOriginKm} km from start
-                      </div>
-                    </div>
 
-                    {/* Scheduled & Estimated Time */}
-                    <div className="text-right shrink-0">
-                      <div className="font-mono font-bold text-xs sm:text-sm text-slate-900">
-                        {stop.scheduledTime}
+                      {/* Scheduled & Estimated Time */}
+                      <div className="text-right shrink-0">
+                        <div className="font-mono font-bold text-xs sm:text-sm text-slate-900">
+                          {stop.scheduledTime}
+                        </div>
+                        <div className="text-[10px] text-[#059669] font-semibold">
+                          {lang === 'gu' ? 'સમયસર' : 'On Schedule'}
+                        </div>
                       </div>
-                      <div className="text-[10px] text-emerald-600 font-medium">On Schedule</div>
                     </div>
                   </div>
                 );
