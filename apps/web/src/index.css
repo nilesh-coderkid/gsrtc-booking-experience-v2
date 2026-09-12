@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --gsrtc-navy: #002B49;
+    --gsrtc-navy-light: #003e6b;
+    --gsrtc-saffron: #E8590C;
+    --gsrtc-saffron-light: #ff772e;
+    --gsrtc-green: #059669;
+    --gsrtc-emerald: #10b981;
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Seat Lock Diagonal Hazard Stripes */
+.seat-locked-stripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #fef3c7,
+    #fef3c7 6px,
+    #fde68a 6px,
+    #fde68a 12px
+  );
+  border-color: #f59e0b;
+}
+
+/* Glassmorphism surfaces */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-nav {
+  background: rgba(0, 43, 73, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.98); }
+}
+
+.pulse-lock {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}

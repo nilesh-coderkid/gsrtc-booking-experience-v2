@@ -1,0 +1,14 @@
+{
+  "name": "gsrtc-transit-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @gsrtc/web dev",
+    "build": "pnpm --filter @gsrtc/web build",
+    "preview": "pnpm --filter @gsrtc/web preview"
+  },
+  "packageManager": "pnpm@11.22.0",
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
