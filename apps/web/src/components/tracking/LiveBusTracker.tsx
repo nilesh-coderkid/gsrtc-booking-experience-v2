@@ -12,7 +12,12 @@ interface LiveBusTrackerProps {
 
 export const LiveBusTracker: React.FC<LiveBusTrackerProps> = ({ initialPnr }) => {
   const { t } = useLanguage();
-  const [searchPnr, setSearchPnr] = useState(initialPnr || 'GSRTC-982341');
+  const defaultTarget =
+    initialPnr ||
+    GSRTCStorageEngine.getBookings()[0]?.pnr ||
+    GSRTCStorageEngine.getSchedules()[0]?.busNumber ||
+    '';
+  const [searchPnr, setSearchPnr] = useState(defaultTarget);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [activeSchedule, setActiveSchedule] = useState<BusSchedule | null>(null);
   const [trackingInfo, setTrackingInfo] = useState<BusTrackingLocation | null>(null);

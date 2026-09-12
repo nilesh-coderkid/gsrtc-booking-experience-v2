@@ -18,9 +18,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenHelpline,
 }) => {
   const { lang, changeLanguage, t } = useLanguage();
-  const [walletBalance, setWalletBalance] = useState<number>(1250);
+  const [walletBalance, setWalletBalance] = useState<number>(() => GSRTCStorageEngine.getWalletBalance());
   const [voiceActive, setVoiceActive] = useState<boolean>(false);
-  const [bookingCount, setBookingCount] = useState<number>(0);
+  const [bookingCount, setBookingCount] = useState<number>(() => GSRTCStorageEngine.getBookings().length);
 
   useEffect(() => {
     setWalletBalance(GSRTCStorageEngine.getWalletBalance());

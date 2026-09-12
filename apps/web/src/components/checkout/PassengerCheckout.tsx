@@ -28,12 +28,12 @@ export const PassengerCheckout: React.FC<PassengerCheckoutProps> = ({
     schedule.routeStops[schedule.routeStops.length - 1]
   );
 
-  // Initialize passenger records for each selected seat
+  // Initialize passenger records for each selected seat (unfilled by default)
   const [passengers, setPassengers] = useState<Passenger[]>(
     selectedSeats.map((seatNumber) => ({
       seatNumber,
       fullName: '',
-      age: 28,
+      age: 0,
       gender: 'MALE',
       isSingleLady: false,
       concessionType: 'NONE',
@@ -50,8 +50,12 @@ export const PassengerCheckout: React.FC<PassengerCheckoutProps> = ({
     return sum + (seatObj?.basePrice || schedule.baseFare);
   }, 0);
 
-  const tollFee = 15;
-  const amenitiesFee = 10;
+  // Dynamic fee calculation based on actual distance and schedule amenities
+  const tollFee = Math.max(10, Math.round(schedule.distanceKm * 0.07));
+  const amenitiesFee =
+    (schedule.amenities.hasAc ? 15 : 5) +
+    (schedule.amenities.hasCharging ? 5 : 0) +
+    (schedule.amenities.hasWater ? 5 : 0);
   const gstAmount = Math.round((baseFareTotal + tollFee + amenitiesFee) * 0.05 * 100) / 100;
   const totalAmount = Math.round((baseFareTotal + tollFee + amenitiesFee + gstAmount) * 100) / 100;
 
@@ -70,8 +74,8 @@ export const PassengerCheckout: React.FC<PassengerCheckoutProps> = ({
         setErrorMsg(`Please enter full name for Passenger on Seat ${passengers[i].seatNumber}.`);
         return;
       }
-      if (passengers[i].age < 1 || passengers[i].age > 120) {
-        setErrorMsg(`Please enter a valid age for Seat ${passengers[i].seatNumber}.`);
+      if (!passengers[i].age || passengers[i].age < 1 || passengers[i].age > 120) {
+        setErrorMsg(`Please enter a valid age (1-120) for Passenger on Seat ${passengers[i].seatNumber}.`);
         return;
       }
     }
@@ -230,7 +234,8 @@ export const PassengerCheckout: React.FC<PassengerCheckoutProps> = ({
                         type="number"
                         min="1"
                         max="120"
-                        value={p.age}
+                        value={p.age || ''}
+                        placeholder="Age"
                         onChange={(e) => handlePassengerChange(idx, 'age', parseInt(e.target.value) || 0)}
                         className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#002B49]"
                       />

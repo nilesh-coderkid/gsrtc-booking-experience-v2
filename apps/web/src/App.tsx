@@ -28,8 +28,12 @@ export function App() {
   const [bookingStep, setBookingStep] = useState<BookingStep>(1);
 
   // Search Parameters
-  const [fromStationId, setFromStationId] = useState('ADI-GM');
-  const [toStationId, setToStationId] = useState('SOU-NV');
+  const [fromStationId, setFromStationId] = useState(
+    () => GSRTCStorageEngine.getStations()[0]?.id || 'ADI-GM'
+  );
+  const [toStationId, setToStationId] = useState(
+    () => GSRTCStorageEngine.getStations().find((s) => s.id === 'SOU-NV')?.id || GSRTCStorageEngine.getStations()[1]?.id || 'SOU-NV'
+  );
   const [journeyDate, setJourneyDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [quota, setQuota] = useState<QuotaType>('GENERAL');
 
@@ -52,7 +56,9 @@ export function App() {
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
 
   // Tracking PNR target
-  const [trackingPnr, setTrackingPnr] = useState<string>('GSRTC-982341');
+  const [trackingPnr, setTrackingPnr] = useState<string>(
+    () => GSRTCStorageEngine.getBookings()[0]?.pnr || ''
+  );
 
   // Drawers & Modals
   const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
