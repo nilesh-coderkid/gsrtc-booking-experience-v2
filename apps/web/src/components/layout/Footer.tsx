@@ -147,6 +147,12 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
+        <p className="pt-4 text-xs leading-relaxed text-white/60">
+          {lang === 'gu'
+            ? 'આ પ્લેટફોર્મ માત્ર પ્રદર્શન અને પરીક્ષણ માટેની ડેમો એપ્લિકેશન છે. અહીં દર્શાવેલી બુકિંગ, ચુકવણી અને લાઇવ ડેટા સેવાઓ વાસ્તવિક વ્યવહાર માટે નથી.'
+            : 'This platform is a demonstration application for preview and testing. Bookings, payments, and live transit data shown here are not real transactions or production services.'}
+        </p>
+
         {/* Bottom Copyright & Legal Links */}
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/60">
           <div>

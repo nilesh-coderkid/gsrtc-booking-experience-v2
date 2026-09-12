@@ -67,16 +67,18 @@
 
 | Layer | Technology | Why |
 |-------|-----------|-----|
-| **Framework** | Next.js 14+ (App Router) | SSR for SEO, React ecosystem, government-grade |
-| **Styling** | Tailwind CSS | Utility-first, fast prototyping, consistent design |
-| **UI Components** | shadcn/ui | Accessible, customizable, no vendor lock-in |
-| **State Management** | Zustand (lightweight) | Simple global state for booking flow |
-| **Forms** | React Hook Form + Zod | Type-safe validation, performance |
-| **i18n** | next-intl | Gujarati/Hindi/English support |
-| **Icons** | Lucide React | Consistent, tree-shakeable |
-| **Animations** | Framer Motion | Smooth transitions, accessible |
-| **Analytics** | GA4 via gtag | Replace deprecated UA |
-| **Deployment** | Vercel (or self-hosted) | Government cloud if required |
+| **Framework** | React 19 (Vite 6 SPA) | Modern component architecture, instant HMR, high performance, modular |
+| **Architecture** | Unified One-Page App (`App.tsx` state machine) | Seamless in-page active tab switching, no jarring full-page refreshes |
+| **Workspace** | pnpm Monorepo (`apps/web`, `packages/types`) | Shared type safety across frontend and domain contracts |
+| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite`) | Zero-config Vite integration, modern CSS tokens, high performance |
+| **Icons** | Lucide React (`lucide-react`) | Consistent, clean, tree-shakeable transit iconography |
+| **Concurrency** | `BroadcastChannel` + `localStorage` (`SeatLockService`) | Atomic 10-minute hold countdowns with instant cross-tab sync |
+| **Data Engine** | LocalStorage Engine (`GSRTCStorageEngine`) | Offline-capable client-side persistence pre-seeded with 30+ stations |
+| **i18n** | Trilingual Hook (`useLanguage.ts`) | Native Gujarati, Hindi, and English reactive language dictionary |
+| **Voice Assist** | Web Speech API (`speechEngine.ts`) | Bilingual voice readouts for Divyang accessibility |
+| **Celebration** | Canvas Confetti (`canvas-confetti`) | Lightweight visual celebration upon successful ticket confirmation |
+| **Analytics** | GA4 via gtag | Modern replacement for deprecated UA analytics |
+| **Deployment** | Cloudflare Pages / AWS S3 + CloudFront / Nginx | Gujarat Government cloud, edge CDN or self-hosted static hosting |
 
 ---
 
@@ -126,124 +128,110 @@
 
 | Task | Owner | Deliverable |
 |------|-------|-------------|
-| Color palette, typography, spacing tokens | Design Lead | `tailwind.config.ts` |
-| Component library (Button, Input, Select, Card, Modal, etc.) | Design Lead + Dev A | `components/ui/` |
-| Project setup (Next.js, folder structure, linting, CI) | Tech Lead | Repo + dev environment |
-| Figma wireframes for all key pages | Design Lead | Figma file |
-| i18n setup (en/gu/hi) | Dev C | `messages/` folder + config |
+| Monorepo & pnpm workspace setup | Tech Lead | `pnpm-workspace.yaml`, `package.json` |
+| Shared transit contracts (`Station`, `BusSchedule`, `SeatLock`) | Tech Lead | `packages/types/src/index.ts` |
+| Tailwind CSS v4 setup & transit design tokens | Design Lead | `apps/web/src/index.css`, `vite.config.ts` |
+| LocalStorage engine & seed fleet data (30+ stations) | Dev A | `apps/web/src/services/storageEngine.ts`, `seedData.ts` |
+| Trilingual dictionary & hook (en/gu/hi) | Dev C | `apps/web/src/hooks/useLanguage.ts` |
 
-### Phase 2: Homepage + Booking Widget (Week 2-3)
-
-| Task | Owner | Deliverable |
-|------|-------|-------------|
-| Homepage layout (hero, stats, destinations) | Dev A | `/page.tsx` |
-| Booking widget (single smart form, not 6 tabs) | Dev A | `components/booking/` |
-| Autocomplete for source/destination | Dev A | API integration |
-| Date picker component | Dev A | `components/ui/date-picker.tsx` |
-| Mobile-responsive navbar + footer | Dev A | `components/layout/` |
-
-### Phase 3: Booking Flow (Week 3-5)
+### Phase 2: One-Page Shell + Hero Omnibox (Week 2-3)
 
 | Task | Owner | Deliverable |
 |------|-------|-------------|
-| Search results page (bus list, filters) | Dev B | `/search/page.tsx` |
-| Seat selection component | Dev B | `components/seat-selection/` |
-| Passenger details form | Dev B | `/booking/passenger-details` |
-| Payment integration page | Dev B | `/booking/payment` |
-| Booking confirmation + ticket | Dev B | `/booking/confirmation` |
-| Progress stepper component | Dev B | `components/ui/stepper.tsx` |
+| One-Page layout container & active view state machine | Tech Lead | `apps/web/src/App.tsx` |
+| Hero Omnibox (depot autocomplete, station swap, quota selector) | Dev A | `apps/web/src/components/hero/HeroOmnibox.tsx` |
+| Responsive Navbar with view tabs & language toggle | Dev A | `apps/web/src/components/layout/Navbar.tsx` |
+| Live Counter Ticker (active fleet, passenger statistics) | Dev A | `apps/web/src/components/layout/LiveCounterTicker.tsx` |
+| Footer & accessibility links | Dev A | `apps/web/src/components/layout/Footer.tsx` |
 
-### Phase 4: Account + Post-Booking (Week 4-6)
-
-| Task | Owner | Deliverable |
-|------|-------|-------------|
-| Login/Register pages | Dev C | `/auth/` |
-| Dashboard (booking history, wallet) | Dev C | `/dashboard/` |
-| Ticket cancellation flow | Dev C | `/booking/cancel` |
-| Reschedule flow | Dev C | `/booking/reschedule` |
-| Bus pass pages | Dev C | `/bus-pass/` |
-
-### Phase 5: Info Pages + Polish (Week 5-7)
+### Phase 3: Booking Flow & Concurrency Engine (Week 3-5)
 
 | Task | Owner | Deliverable |
 |------|-------|-------------|
-| About, Leadership, Contact pages | Dev D | `/about/`, `/contact/` |
-| FAQ, Policies, RTI pages | Dev D | `/info/` |
-| Tenders, Recruitment pages | Dev D | `/info/` |
-| Accessibility audit + fixes | Tech Lead | WCAG 2.1 AA compliance |
-| Performance optimization | Tech Lead | Lighthouse 90+ score |
-| QA + bug fixes | All | Test reports |
+| Booking step progression indicator (Steps 1-4) | Dev B | `apps/web/src/components/stepper/BookingStepper.tsx` |
+| Bus search results list & filters (class, AC, amenities) | Dev B | `apps/web/src/components/buses/BusList.tsx`, `BusCard.tsx` |
+| Real-time atomic seat concurrency locking service | Dev B | `apps/web/src/services/seatLockService.ts`, `useSeatLocks.ts` |
+| Interactive dual-deck SeatPicker (Single Lady safety rule, hold timer) | Dev B | `apps/web/src/components/seatmap/SeatPicker.tsx` |
+| Boarding selector, passenger forms & simulated checkout | Dev B | `apps/web/src/components/checkout/PassengerCheckout.tsx` |
+| Digital E-Ticket view with dynamic QR code & PDF/print layout | Dev B | `apps/web/src/components/ticket/ETicketView.tsx` |
+
+### Phase 4: Account, Passes & Live Tracking (Week 4-6)
+
+| Task | Owner | Deliverable |
+|------|-------|-------------|
+| Quick-access booking history drawer | Dev C | `apps/web/src/components/layout/MyBookingsDrawer.tsx` |
+| Live GPS Bus Tracker (interactive station route timeline & speed) | Dev C | `apps/web/src/components/tracking/LiveBusTracker.tsx` |
+| Commuter & Student bus pass generator with digital pass card | Dev C | `apps/web/src/components/pass/BusPassSection.tsx` |
+| Ticket cancellation & automated refund calculator | Dev C | `apps/web/src/components/cancel/CancellationSection.tsx` |
+| 24x7 Emergency helpline modal | Dev C | `apps/web/src/components/helpline/EmergencyHelplineModal.tsx` |
+
+### Phase 5: Voice Accessibility & Polish (Week 5-7)
+
+| Task | Owner | Deliverable |
+|------|-------|-------------|
+| Web Speech API integration (Gujarati/English readouts) | Dev D | `apps/web/src/speech/speechEngine.ts` |
+| Accessibility audit (WCAG 2.1 AA compliance) | Tech Lead | Accessibility test reports |
+| Performance optimization & Lighthouse 90+ score | Tech Lead | Vite production bundle audit |
+| Multi-tab concurrency verification & QA | All | Multi-tab test reports |
 
 ---
 
 ## 5. Folder Structure
 
 ```
-gsrtc-redesign/
-├── app/
-│   ├── [locale]/                    # i18n routing
-│   │   ├── page.tsx                 # Homepage
-│   │   ├── layout.tsx               # Root layout
-│   │   ├── search/
-│   │   │   └── page.tsx             # Search results
-│   │   ├── booking/
-│   │   │   ├── seats/page.tsx       # Seat selection
-│   │   │   ├── details/page.tsx     # Passenger details
-│   │   │   ├── payment/page.tsx     # Payment
-│   │   │   └── confirmation/page.tsx
-│   │   ├── dashboard/
-│   │   │   ├── page.tsx             # User dashboard
-│   │   │   ├── history/page.tsx     # Booking history
-│   │   │   └── wallet/page.tsx      # Wallet
-│   │   ├── auth/
-│   │   │   ├── login/page.tsx
-│   │   │   └── register/page.tsx
-│   │   ├── about/page.tsx
-│   │   ├── contact/page.tsx
-│   │   └── info/
-│   │       ├── faq/page.tsx
-│   │       ├── policies/page.tsx
-│   │       └── ...
-│   └── api/                         # API routes (if needed)
-├── components/
-│   ├── ui/                          # Base UI components
-│   │   ├── button.tsx
-│   │   ├── input.tsx
-│   │   ├── select.tsx
-│   │   ├── card.tsx
-│   │   ├── modal.tsx
-│   │   ├── stepper.tsx
-│   │   └── ...
-│   ├── booking/                     # Booking-specific
-│   │   ├── search-form.tsx
-│   │   ├── bus-card.tsx
-│   │   ├── seat-map.tsx
-│   │   └── passenger-form.tsx
-│   ├── layout/                      # Layout components
-│   │   ├── header.tsx
-│   │   ├── footer.tsx
-│   │   ├── mobile-nav.tsx
-│   │   └── sidebar.tsx
-│   └── shared/                      # Shared widgets
-│       ├── stats-counter.tsx
-│       ├── destination-carousel.tsx
-│       └── accessibility-panel.tsx
-├── lib/
-│   ├── api.ts                       # API client
-│   ├── utils.ts                     # Helpers
-│   └── validations.ts               # Zod schemas
-├── hooks/                           # Custom React hooks
-├── stores/                          # Zustand stores
-│   ├── booking-store.ts
-│   └── auth-store.ts
-├── messages/                        # i18n translations
-│   ├── en.json
-│   ├── gu.json
-│   └── hi.json
-├── public/                          # Static assets
-├── tailwind.config.ts
-├── next.config.ts
-└── package.json
+gsrtc-booking-experience-v2/
+├── apps/
+│   └── web/                                # One-Page React Application (@gsrtc/web)
+│       ├── src/
+│       │   ├── assets/                     # Hero banners & SVG assets
+│       │   ├── components/                 # Modular transit components
+│       │   │   ├── buses/                  # BusList.tsx, BusCard.tsx
+│       │   │   ├── cancel/                 # CancellationSection.tsx
+│       │   │   ├── checkout/               # PassengerCheckout.tsx
+│       │   │   ├── helpline/               # EmergencyHelplineModal.tsx
+│       │   │   ├── hero/                   # HeroOmnibox.tsx
+│       │   │   ├── layout/                 # Navbar.tsx, Footer.tsx, LiveCounterTicker.tsx, MyBookingsDrawer.tsx
+│       │   │   ├── pass/                   # BusPassSection.tsx
+│       │   │   ├── seatmap/                # SeatPicker.tsx (Dual deck, Concurrency lock)
+│       │   │   ├── stepper/                # BookingStepper.tsx
+│       │   │   ├── ticket/                 # ETicketView.tsx
+│       │   │   └── tracking/               # LiveBusTracker.tsx
+│       │   ├── hooks/                      # Reactive custom hooks
+│       │   │   ├── useLanguage.ts          # Trilingual dictionary & hook (en/gu/hi)
+│       │   │   └── useSeatLocks.ts         # BroadcastChannel seat lock countdown hook
+│       │   ├── services/                   # Storage engine & transit domain services
+│       │   │   ├── bookingService.ts       # Booking persistence & PNR generator
+│       │   │   ├── busService.ts           # Station search & schedule query filters
+│       │   │   ├── passService.ts          # Bus pass application persistence
+│       │   │   ├── seatLockService.ts      # Multi-tab atomic seat concurrency locking
+│       │   │   ├── seedData.ts             # 30+ Gujarat stations, bus fleets & schedules
+│       │   │   ├── storageEngine.ts        # LocalStorage engine with reactivity
+│       │   │   └── trackingService.ts      # GPS tracking simulation
+│       │   ├── speech/                     # Web Speech API engine
+│       │   │   └── speechEngine.ts         # Voice readouts for Divyang accessibility
+│       │   ├── App.css                     # Custom component styles
+│       │   ├── App.tsx                     # One-Page layout container & active view state machine
+│       │   ├── index.css                   # Tailwind CSS v4 setup & transit design tokens
+│       │   └── main.tsx                    # React 19 entry point
+│       ├── public/                         # Favicon and static SVGs
+│       ├── index.html                      # Single Page Application entry HTML
+│       ├── package.json                    # @gsrtc/web dependencies
+│       ├── tsconfig.json                   # TypeScript configuration
+│       └── vite.config.ts                  # Vite 6 + React + Tailwind v4 plugin config
+├── packages/
+│   └── types/                              # Shared transit types (@gsrtc/types)
+│       ├── src/
+│       │   └── index.ts                    # Station, BusSchedule, Seat, Booking, etc.
+│       ├── package.json                    # @gsrtc/types manifest
+│       └── tsconfig.json                   # Shared TypeScript config
+├── docs/                                   # Project documentation & wireframes
+│   ├── GSRTC-REDESIGN-PLAN.md              # Project plan & sprint roadmap
+│   ├── GSRTC-WIREFRAMES.md                 # UI mockups & component architecture mapping
+│   ├── enhancements.md                     # Modernization audit & tech stack
+│   └── implementation_plan.md              # Architecture plan & concurrency specs
+├── package.json                            # Root workspace scripts (pnpm dev, pnpm build)
+├── pnpm-workspace.yaml                     # pnpm monorepo workspace definition
+└── pnpm-lock.yaml                          # Lockfile
 ```
 
 ---
@@ -392,7 +380,7 @@ test: add unit tests for validation schemas
 ### End of Day (17:00, optional)
 
 - Quick progress update in Slack/Discord
-- Flag any blockers for next standup
+- Flag any blockers for the upcoming standup
 
 ---
 

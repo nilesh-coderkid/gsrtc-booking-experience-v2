@@ -63,6 +63,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="tracking-wide font-semibold">
                 {lang === 'gu' ? 'ગુજરાત રાજ્ય માર્ગ વાહનવ્યવહાર નિગમ' : 'GSRTC • Gujarat State Road Transport Corporation'}
               </span>
+              <span className="hidden sm:inline rounded-full border border-amber-300/40 bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
+                {lang === 'gu' ? 'ડેમો એપ્લિકેશન' : 'Demo Application'}
+              </span>
               <span className="text-white/30 hidden md:inline">|</span>
               <span className="text-white/70 hidden md:inline text-[11px] font-sans">Government of Gujarat</span>
             </div>

@@ -45,18 +45,20 @@ Preloader references Kerala_Logo.png (wrong state)
 
 ## 2. Recommended Tech Stack
 
-| Layer                | Technology               | Why                                                |
-| -------------------- | ------------------------ | -------------------------------------------------- |
-| **Framework**        | Next.js 14+ (App Router) | SSR for SEO, React ecosystem, government-grade     |
-| **Styling**          | Tailwind CSS             | Utility-first, fast prototyping, consistent design |
-| **UI Components**    | shadcn/ui                | Accessible, customizable, no vendor lock-in        |
-| **State Management** | Zustand (lightweight)    | Simple global state for booking flow               |
-| **Forms**            | React Hook Form + Zod    | Type-safe validation, performance                  |
-| **i18n**             | next-intl                | Gujarati/Hindi/English support                     |
-| **Icons**            | Lucide React             | Consistent, tree-shakeable                         |
-| **Animations**       | Framer Motion            | Smooth transitions, accessible                     |
-| **Analytics**        | GA4 via gtag             | Replace deprecated UA                              |
-| **Deployment**       | Vercel (or self-hosted)  | Government cloud if required                       |
+| Layer                | Technology                                         | Why                                                                   |
+| -------------------- | -------------------------------------------------- | --------------------------------------------------------------------- |
+| **Framework**        | React 19 (Vite 6 SPA)                              | Modern component architecture, instant HMR, high performance, modular |
+| **Architecture**     | Unified One-Page App (`App.tsx` state machine)     | Seamless in-page active tab switching, no jarring full-page refreshes |
+| **Workspace**        | pnpm Monorepo (`apps/web`, `packages/types`)       | Shared type safety across frontend and domain contracts               |
+| **Styling**          | Tailwind CSS v4 (`@tailwindcss/vite`)              | Zero-config Vite integration, modern CSS tokens, high performance     |
+| **Icons**            | Lucide React (`lucide-react`)                      | Consistent, clean, tree-shakeable transit iconography                 |
+| **Concurrency**      | `BroadcastChannel` + `localStorage` (`SeatLockService`) | Atomic 10-minute hold countdowns with instant cross-tab sync    |
+| **Data Engine**      | LocalStorage Engine (`GSRTCStorageEngine`)         | Offline-capable client-side persistence pre-seeded with 30+ stations  |
+| **i18n**             | Trilingual Hook (`useLanguage.ts`)                 | Native Gujarati, Hindi, and English reactive language dictionary      |
+| **Voice Assist**     | Web Speech API (`speechEngine.ts`)                 | Bilingual voice readouts for Divyang accessibility                    |
+| **Celebration**      | Canvas Confetti (`canvas-confetti`)                | Lightweight visual celebration upon successful ticket confirmation    |
+| **Analytics**        | GA4 via gtag                                       | Modern replacement for deprecated UA analytics                        |
+| **Deployment**       | Cloudflare Pages / AWS S3 + CloudFront / Nginx     | Gujarat Government cloud, edge CDN or self-hosted static hosting      |
 
 ---
 
